@@ -61,3 +61,7 @@ jobs:
       - name: Deploy to AKS
         run: |
           kubectl apply -f deployment.yaml
+          
+      - name: Restart deployment to ensure new image is used
+        run: |
+          kubectl rollout restart deployment ${{ env.APP_NAME }} -n ${{ env.NAMESPACE }}
