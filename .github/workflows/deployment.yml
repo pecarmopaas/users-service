@@ -8,7 +8,7 @@ on:
 env:
   APP_NAME: ${{ github.event.repository.name }}
   NAMESPACE: ${{ github.event.repository.name }}-ns
-  ACR_REGISTRY: acrdevneuall.io
+  ACR_REGISTRY: acrneudevall.azurecr.io 
   ACR_IMAGE_TAG: dev-${{ github.run_number }}
 
 jobs:
