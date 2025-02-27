@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+const PORT = 3000;
+
 app.use(express.json());
 
 app.get('/users', (req, res) => {
@@ -15,6 +17,6 @@ app.delete('/users', (req, res) => {
   res.send('User was deleted');
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+app.listen(PORT, () => {
+  console.log('Server running on port ' + PORT);
 });
