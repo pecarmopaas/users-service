@@ -9,6 +9,7 @@ env:
   APP_NAME: ${{ github.event.repository.name }}
   NAMESPACE: ${{ github.event.repository.name }}-ns
   ACR_REGISTRY: acrneudevall.azurecr.io 
+  ACR_NAME : acrneudevall
   ACR_IMAGE_TAG: dev-${{ github.run_number }}
 
 jobs:
@@ -24,32 +25,38 @@ jobs:
           creds: |
             {
               "clientId": "${{ secrets.ARM_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}", 
-              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
+              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
               "tenantId": "${{ secrets.ARM_TENANT_ID }}"
             }
 
       - name: Get AKS credentials
-        run: az aks get-credentials --name aks-neu-dev --resource-group rg-neu-dev
+        run: az aks get-credentials --name aks-neu-dev --resource-group myresourcegroup
 
-      - name: Create namespace if it doesnt exist
+      - name: Create namespace if it doesn’t exist
         run: |
           if ! kubectl get namespace ${{ env.NAMESPACE }} &> /dev/null; then
             echo "Namespace ${{ env.NAMESPACE }} does not exist, creating it."
             kubectl create namespace ${{ env.NAMESPACE }}
           fi
 
+      - name: Log in to Azure Container Registry
+        run: |
+          # Retrieve ACR username and password
+          ACR_USERNAME=$(az acr credential show --name ${{ env.ACR_NAME }} --query username --output tsv)
+          ACR_PASSWORD=$(az acr credential show --name ${{ env.ACR_NAME }} --query passwords[0].value --output tsv)
+          # Log in to Docker with the retrieved credentials
+          echo "$ACR_PASSWORD" | docker login ${{ env.ACR_REGISTRY }} -u "$ACR_USERNAME" --password-stdin
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
-          dockerfile: Dockerfile
+          file: Dockerfile
           tags: |
             ${{ env.ACR_REGISTRY }}/${{ env.APP_NAME }}:dev
             ${{ env.ACR_REGISTRY }}/${{ env.APP_NAME }}:${{ env.ACR_IMAGE_TAG }}
           push: true
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Deploy to AKS
         run: |
