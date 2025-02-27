@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: users-service
-        image: users-service:latest
+        image: acrneudevall.azurecr.io/users-service:dev
         ports:
         - containerPort: 8080
 ---
