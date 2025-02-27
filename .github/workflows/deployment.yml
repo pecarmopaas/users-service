@@ -39,13 +39,11 @@ jobs:
             echo "Namespace ${{ env.NAMESPACE }} does not exist, creating it."
             kubectl create namespace ${{ env.NAMESPACE }}
           fi
-
+s
       - name: Log in to Azure Container Registry
         run: |
-          # Retrieve ACR username and password
           ACR_USERNAME=$(az acr credential show --name ${{ env.ACR_NAME }} --query username --output tsv)
           ACR_PASSWORD=$(az acr credential show --name ${{ env.ACR_NAME }} --query passwords[0].value --output tsv)
-          # Log in to Docker with the retrieved credentials
           echo "$ACR_PASSWORD" | docker login ${{ env.ACR_REGISTRY }} -u "$ACR_USERNAME" --password-stdin
 
       - name: Build and push Docker image
