@@ -30,16 +30,16 @@ jobs:
               "tenantId": "${{ secrets.ARM_TENANT_ID }}"
             }
 
-      - name: Get AKS credentials
-        run: az aks get-credentials --name aks-neu-dev --resource-group rg-neu-dev
-
-      - name: Create namespace if it doesn’t exist
-        run: |
-          if ! kubectl get namespace ${{ env.NAMESPACE }} &> /dev/null; then
-            echo "Namespace ${{ env.NAMESPACE }} does not exist, creating it."
-            kubectl create namespace ${{ env.NAMESPACE }}
-          fi
-
+      # - name: Get AKS credentials
+      #   run: az aks get-credentials --name aks-neu-dev --resource-group rg-neu-dev
+      #
+      # - name: Create namespace if it doesn’t exist
+      #   run: |
+      #     if ! kubectl get namespace ${{ env.NAMESPACE }} &> /dev/null; then
+      #       echo "Namespace ${{ env.NAMESPACE }} does not exist, creating it."
+      #       kubectl create namespace ${{ env.NAMESPACE }}
+      #     fi
+      #
       - name: Log in to Azure Container Registry
         run: |
           ACR_USERNAME=$(az acr credential show --name ${{ env.ACR_NAME }} --query username --output tsv)
@@ -56,10 +56,10 @@ jobs:
             ${{ env.ACR_REGISTRY }}/${{ env.APP_NAME }}:${{ env.ACR_IMAGE_TAG }}
           push: true
 
-      - name: Deploy to AKS
-        run: |
-          kubectl apply -f deployment.yaml
-          
-      - name: Restart deployment to ensure new image is used
-        run: |
-          kubectl rollout restart deployment ${{ env.APP_NAME }} -n ${{ env.NAMESPACE }}
+      # - name: Deploy to AKS
+      #   run: |
+      #     kubectl apply -f deployment.yaml
+      #
+      # - name: Restart deployment to ensure new image is used
+      #   run: |
+      #     kubectl rollout restart deployment ${{ env.APP_NAME }} -n ${{ env.NAMESPACE }}
