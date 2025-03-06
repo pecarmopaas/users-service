@@ -36,3 +36,23 @@ spec:
       port: 80
       targetPort: 8000
   type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: users-service-ingress
+  namespace: users-service-ns
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+spec:
+  rules:
+  - host: users.paas.pecarmo.pt
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: users-service
+            port:
+              number: 8000
