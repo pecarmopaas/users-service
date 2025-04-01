@@ -6,19 +6,19 @@ const PORT = 8000;
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('API is running');
+  res.send('API is running.');
 });
 
 app.get('/users', (req, res) => {
-  res.send('All users');
+  res.send('All users.');
 });
 
 app.post('/users', (req, res) => {
-  res.send('User was added');
+  res.send('User was added.');
 });
 
 app.delete('/users', (req, res) => {
-  res.send('User was deleted');
+  res.send('User was deleted.');
 });
 
 app.listen(PORT, () => {
