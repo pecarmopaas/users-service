@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/users', (req, res) => {
-  res.send('All users.');
+  res.send('All users. :))))');
 });
 
 app.post('/users', (req, res) => {
