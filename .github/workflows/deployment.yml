@@ -58,8 +58,8 @@ jobs:
 
       - name: Retrieve secrets from Azure Key Vault
         run: |
-          CERT=$(az keyvault secret show --vault-name kv-neu-dev-all --name cloudflare-origin-cert --query value -o tsv)
-          KEY=$(az keyvault secret show --vault-name kv-neu-dev-all --name cloudflare-origin-key --query value -o tsv)
+          CERT=$(az keyvault secret show --vault-name kv-neu-dev-all --name cloudflare-origin-cert --query value -o tsv | base64 -w 0)
+          KEY=$(az keyvault secret show --vault-name kv-neu-dev-all --name cloudflare-origin-key --query value -o tsv | base64 -w 0)
           sed -i "s|<TLS_CERT>|$CERT|g" deployment.yaml
           sed -i "s|<TLS_KEY>|$KEY|g" deployment.yaml
 
