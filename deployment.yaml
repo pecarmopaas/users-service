@@ -1,4 +1,14 @@
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-origin-tls-secret
+  namespace: users-service-ns
+type: kubernetes.io/tls
+data:
+  tls.crt: <TLS_CERT>
+  tls.key: <TLS_KEY>
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,7 +28,7 @@ spec:
     spec:
       containers:
       - name: users-service
-       
+
         image: acrneudevall.azurecr.io/users-service:dev
         imagePullPolicy: Always
         ports:
