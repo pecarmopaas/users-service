@@ -18,6 +18,7 @@ spec:
     spec:
       containers:
       - name: users-service
+       
         image: acrneudevall.azurecr.io/users-service:dev
         imagePullPolicy: Always
         ports:
@@ -27,7 +28,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: users-service
-  namespace: users-service-ns  
+  namespace: users-service-ns
 spec:
   selector:
     app: users-service
@@ -44,9 +45,14 @@ metadata:
   namespace: users-service-ns
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
+  tls:
+  - hosts:
+    - users.pecarmo.pt
+    secretName: cloudflare-origin-tls-secret
   rules:
-  - host: users.paas.pecarmo.pt
+  - host: users.pecarmo.pt
     http:
       paths:
       - path: /
@@ -55,4 +61,4 @@ spec:
           service:
             name: users-service
             port:
-              number: 8000
+              number: 80
