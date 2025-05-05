@@ -85,10 +85,10 @@ spec:
   ingressClassName: azure-application-gateway
   tls:
   - hosts:
-    - users.pecarmo.pt
+    - users.pecarmopaas.pt
     secretName: cloudflare-origin-tls
   rules:
-  - host: users.pecarmo.pt
+  - host: users.pecarmopaas.pt
     http:
       paths:
       - path: /
