@@ -9,14 +9,14 @@ spec:
     - secretName: origin-tls
       type: kubernetes.io/tls
       data:
-        - objectName: origin
+        - objectName: cloudflare-origin
           key: tls.key
-        - objectName: origin
+        - objectName: cloudflare-origin
           key: tls.crt
   parameters:
     usePodIdentity: "false"
     useVMManagedIdentity: "true"
-    userAssignedIdentityID: "<identity_id>"
+    userAssignedIdentityID: "12b3accd-08bb-4089-8bff-18aecf193e6a"
     keyvaultName: kv-neu-dev-all
     objects: |
       array:
