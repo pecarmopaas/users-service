@@ -20,7 +20,7 @@ env:
   RESOURCE_GROUP: rg-neu-${{ github.ref_name }}
   KEY_VAULT_NAME: kv-neu-${{ github.ref_name }}-all
   ACR_IMAGE_TAG: ${{ github.ref_name }}-${{ github.run_number }}
-  DEPLOYMENT_YML_PATH: ./envs/${{ github.ref_name }}/deployment.yml
+  DEPLOYMENT_YML_PATH: ./envs/${{ github.ref_name }}/deployment.yaml
 
 jobs:
   build-and-deploy:
