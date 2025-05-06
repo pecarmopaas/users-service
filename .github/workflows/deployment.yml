@@ -5,6 +5,9 @@ on:
     branches:
       - dev
 
+permissions:
+  contents: read
+
 env:
   APP_NAME: ${{ github.event.repository.name }}
   NAMESPACE: ${{ github.event.repository.name }}-ns
