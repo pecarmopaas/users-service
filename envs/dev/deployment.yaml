@@ -16,7 +16,7 @@ spec:
   parameters:
     usePodIdentity: "false"
     useVMManagedIdentity: "true"
-    userAssignedIdentityID: "12b3accd-08bb-4089-8bff-18aecf193e6a"
+    userAssignedIdentityID: "<identity_id>"
     keyvaultName: kv-neu-dev-all
     objects: |
       array:
