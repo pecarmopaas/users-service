@@ -21,7 +21,7 @@ spec:
     objects: |
       array:
         - |
-          objectName: origin
+          objectName: cloudflare-origin
           objectType: secret
     tenantId: 6bfdb318-8dfa-4d4c-ae55-c0862aa6a5b1
 ---
@@ -85,10 +85,10 @@ spec:
   ingressClassName: azure-application-gateway
   tls:
   - hosts:
-    - users.dev.pecarmopaas.pt
+    - dev-users.pecarmopaas.pt
     secretName: origin-tls
   rules:
-  - host: users.dev.pecarmopaas.pt
+  - host: dev-users.pecarmopaas.pt
     http:
       paths:
       - path: /
