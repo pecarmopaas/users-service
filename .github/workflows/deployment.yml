@@ -1,19 +1,26 @@
-name: Build and Deploy
+name: Build and Deploy Users Service
 
 on:
   push:
     branches:
       - dev
+      - uat
+      - prd
 
 permissions:
   contents: read
 
 env:
+  ENV: ${{ github.ref_name }}
   APP_NAME: ${{ github.event.repository.name }}
   NAMESPACE: ${{ github.event.repository.name }}-ns
-  ACR_REGISTRY: acrneudevall.azurecr.io
-  ACR_NAME : acrneudevall
-  ACR_IMAGE_TAG: dev-${{ github.run_number }}
+  ACR_NAME: acrneu${{ github.ref_name }}all
+  ACR_REGISTRY: acrneu${{ github.ref_name }}all.azurecr.io
+  AKS_NAME: aks-neu-${{ github.ref_name }}
+  RESOURCE_GROUP: rg-neu-${{ github.ref_name }}
+  KEY_VAULT_NAME: kv-neu-${{ github.ref_name }}-all
+  ACR_IMAGE_TAG: ${{ github.ref_name }}-${{ github.run_number }}
+  DEPLOYMENT_YML_PATH: envs/${{ github.ref_name }}/deployment.yml
 
 jobs:
   build-and-deploy:
@@ -34,9 +41,9 @@ jobs:
             }
 
       - name: Get AKS credentials
-        run: az aks get-credentials --name aks-neu-dev --resource-group rg-neu-dev
+        run: az aks get-credentials --name ${{ env.AKS_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}
 
-      - name: Create namespace if it doesn't exist
+      - name: Create namespace if it doesn’t exist
         run: |
           if ! kubectl get namespace ${{ env.NAMESPACE }} &> /dev/null; then
             echo "Namespace ${{ env.NAMESPACE }} does not exist, creating it."
@@ -55,19 +62,17 @@ jobs:
           context: .
           file: Dockerfile
           tags: |
-            ${{ env.ACR_REGISTRY }}/${{ env.APP_NAME }}:dev
+            ${{ env.ACR_REGISTRY }}/${{ env.APP_NAME }}:${{ env.ENV }}
             ${{ env.ACR_REGISTRY }}/${{ env.APP_NAME }}:${{ env.ACR_IMAGE_TAG }}
           push: true
 
-      - name: Retrieve secrets from Azure Key Vault
+      - name: Retrieve identity from Azure Key Vault
         run: |
-          ID=$(az keyvault secret show --vault-name kv-neu-dev-all --name aks-identity-id --query value -o tsv)
-          sed -i "s|<identity_id>|$ID|g" deployment.yaml
+          ID=$(az keyvault secret show --vault-name ${{ env.KEY_VAULT_NAME }} --name aks-identity-id --query value -o tsv)
+          sed -i "s|<identity_id>|$ID|g" ${{ env.DEPLOYMENT_YML_PATH }}
 
       - name: Deploy to AKS
-        run: |
-          kubectl apply -f deployment.yaml
+        run: kubectl apply -f ${{ env.DEPLOYMENT_YML_PATH }}
 
       - name: Restart deployment to ensure new image is used
-        run: |
-          kubectl rollout restart deployment ${{ env.APP_NAME }} -n ${{ env.NAMESPACE }}
+        run: kubectl rollout restart deployment/${{ env.APP_NAME }} -n ${{ env.NAMESPACE }}

@@ -6,12 +6,12 @@ metadata:
 spec:
   provider: azure
   secretObjects:
-    - secretName: cloudflare-origin-tls
+    - secretName: origin-tls
       type: kubernetes.io/tls
       data:
-        - objectName: cloudflare-origin
+        - objectName: origin
           key: tls.key
-        - objectName: cloudflare-origin
+        - objectName: origin
           key: tls.crt
   parameters:
     usePodIdentity: "false"
@@ -21,7 +21,7 @@ spec:
     objects: |
       array:
         - |
-          objectName: cloudflare-origin
+          objectName: origin
           objectType: secret
     tenantId: 6bfdb318-8dfa-4d4c-ae55-c0862aa6a5b1
 ---
@@ -86,7 +86,7 @@ spec:
   tls:
   - hosts:
     - users.pecarmopaas.pt
-    secretName: cloudflare-origin-tls
+    secretName: origin-tls
   rules:
   - host: users.pecarmopaas.pt
     http:

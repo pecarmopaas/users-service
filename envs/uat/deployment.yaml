@@ -1,0 +1,100 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: azure-tls
+  namespace: users-service-ns
+spec:
+  provider: azure
+  secretObjects:
+    - secretName: origin-tls
+      type: kubernetes.io/tls
+      data:
+        - objectName: origin
+          key: tls.key
+        - objectName: origin
+          key: tls.crt
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: "<identity_id>"
+    keyvaultName: kv-neu-dev-all
+    objects: |
+      array:
+        - |
+          objectName: origin
+          objectType: secret
+    tenantId: 6bfdb318-8dfa-4d4c-ae55-c0862aa6a5b1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-service
+  namespace: users-service-ns
+  labels:
+    app: users-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-service
+  template:
+    metadata:
+      labels:
+        app: users-service
+    spec:
+      containers:
+      - name: users-service
+        image: acrneudevall.azurecr.io/users-service:dev
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+      volumes:
+      - name: secrets-store-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "azure-tls"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+  namespace: users-service-ns
+spec:
+  selector:
+    app: users-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: users-service-ingress
+  namespace: users-service-ns
+  annotations:
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: azure-application-gateway
+  tls:
+  - hosts:
+    - users.uat.pecarmopaas.pt
+    secretName: origin-tls
+  rules:
+  - host: users.uat.pecarmopaas.pt
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: users-service
+            port:
+              number: 80
