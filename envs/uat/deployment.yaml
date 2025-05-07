@@ -9,19 +9,19 @@ spec:
     - secretName: origin-tls
       type: kubernetes.io/tls
       data:
-        - objectName: origin
+        - objectName: cloudflare-origin
           key: tls.key
-        - objectName: origin
+        - objectName: cloudflare-origin
           key: tls.crt
   parameters:
     usePodIdentity: "false"
     useVMManagedIdentity: "true"
     userAssignedIdentityID: "<identity_id>"
-    keyvaultName: kv-neu-dev-all
+    keyvaultName: kv-neu-uat-all
     objects: |
       array:
         - |
-          objectName: origin
+          objectName: cloudflare-origin
           objectType: secret
     tenantId: 6bfdb318-8dfa-4d4c-ae55-c0862aa6a5b1
 ---
@@ -44,7 +44,7 @@ spec:
     spec:
       containers:
       - name: users-service
-        image: acrneudevall.azurecr.io/users-service:dev
+        image: acrneuuatall.azurecr.io/users-service:uat
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
@@ -85,10 +85,10 @@ spec:
   ingressClassName: azure-application-gateway
   tls:
   - hosts:
-    - users.uat.pecarmopaas.pt
+    - uat-users.pecarmopaas.pt
     secretName: origin-tls
   rules:
-  - host: users.uat.pecarmopaas.pt
+  - host: uat-users.pecarmopaas.pt
     http:
       paths:
       - path: /
